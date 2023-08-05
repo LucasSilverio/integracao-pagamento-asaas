@@ -12,14 +12,24 @@ class CheckoutService implements CheckoutServiceInterface
     public function makePayment(array $data)
     {
         $this->customerId = $this->createCustomer($data['name'], $data['email'], $data['cpfCnpj'], $data['phone']);
-
+        $creditCard = [];
+        $creditCardHolderInfo = [];
+        
+        if ($data['payment_method'] == 'CREDIT_CARD') {
+            $creditCard = $this->createCreditCardObject($data);
+            $creditCardHolderInfo = $this->createCreditCardHolderInfoObject($data);
+        }        
+        
         $response = Http::withHeaders([
             'access_token' => env('ASAAS_KEY')
         ])->post(env('ASAAS_URL').'payments',[
-            'customer'      => $this->customerId,
-            'billingType'     => $data['payment_method'],
-            'value'   =>  '100',
-            'dueDate'     => '2023-08-07'
+            'customer'              => $this->customerId,
+            'billingType'           => $data['payment_method'],
+            'value'                 =>  '100',
+            'dueDate'               => '2023-08-07',
+            'creditCard'            => $creditCard,
+            'creditCardHolderInfo'  => $creditCardHolderInfo,
+            'remoteIp'              => $data['ip']
         ]);
 
         return $response->json();
@@ -42,5 +52,35 @@ class CheckoutService implements CheckoutServiceInterface
         $data = $response->json();
 
         return $data['id'];
+    }
+
+    public function createCreditCardObject(array $data)
+    {
+        
+        $expiry = explode('/', $data['card_expiry']);
+                
+        $creditCard = [
+            'holderName' => $data['holderName'],
+            'number' => $data['card_number'],
+            'expiryMonth' => $expiry[0],
+            'expiryYear' => $expiry[1],
+            'ccv' => $data['cvv'],
+        ];
+        
+        return (object) $creditCard;
+    }
+
+    public function createCreditCardHolderInfoObject(array $data)
+    {        
+        $creditCardHolderInfo = [
+            'name'          => $data['name_titular'],
+            'email'         => $data['email_titular'],
+            'cpfCnpj'       => $data['cpfCnpj_titular'],
+            'postalCode'    => $data['cep_titular'],
+            'addressNumber' => $data['residencia_titular'],
+            'phone'         => $data['phone_titular'],
+        ];
+        
+        return (object) $creditCardHolderInfo;
     }
 }

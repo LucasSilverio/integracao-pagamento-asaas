@@ -60,9 +60,9 @@
     </div>
 
     <div class="md:col-span-1">
-        <label for="cvv">CVV</label>
-        <input type="text" name="cvv"  class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="" />
-        @error('cvv')
+        <label for="ccv">CCV</label>
+        <input type="text" name="ccv"  class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="" />
+        @error('ccv')
             <div class="text-red-600">{{ $message }}</div>
         @enderror
     </div>

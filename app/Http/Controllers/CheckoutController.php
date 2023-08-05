@@ -18,11 +18,12 @@ class CheckoutController extends Controller
 
     public function payment(PaymentCheckoutRequest $request)
     {
-        $data = $request->only(['name', 'cpfCnpj', 'email', 'phone', 'payment_method']);
+        $data = $request->validated();
+        $data['ip'] = $request->ip();
 
         try {
             $info = $this->service->makePayment($data);
-            dd($info);
+            
             if (!$info)
                 return back();
             
