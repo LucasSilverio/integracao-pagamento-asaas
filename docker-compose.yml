@@ -1,0 +1,70 @@
+services:
+  app-perfect-pay:
+    build:
+      args:
+        user: lucas
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: lucazsilverio/laravel-app-10
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    restart: unless-stopped
+    networks:
+      - docker-laravel
+  
+  # redis
+  redis:
+    image: redis:latest
+    networks:
+      - docker-laravel
+  
+  # queue
+  queue:
+    build:
+      args:
+        user: lucas
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    command: "php artisan queue:work"
+    volumes:
+      - ./:/var/www
+    depends_on:
+      - redis
+    networks:
+      - docker-laravel
+      
+  #nginx
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 8888:80
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - docker-laravel
+  
+  #mysql
+  mysql:
+    image: mysql:5.7.22
+    restart: unless-stopped
+    ports:
+      - 3339:3306
+    volumes:
+      - ./.docker/mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - docker-laravel
+
+networks:
+  docker-laravel:
+    driver: bridge
