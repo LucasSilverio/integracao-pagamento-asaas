@@ -51,7 +51,7 @@ class CheckoutController extends Controller
         if ($payment->billingType == 'PIX') {
             $qrCode = $this->service->getQrCodePayment($payment->invoiceNumber);
         }
-
+        
         return view('checkout.thanks', compact('payment', 'qrCode'));
     }
 }
