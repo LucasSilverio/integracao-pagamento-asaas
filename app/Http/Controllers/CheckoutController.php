@@ -26,7 +26,7 @@ class CheckoutController extends Controller
     {
         $data = $request->validated();
         $data['ip'] = $request->ip();
-
+        
         try {
             $payment = $this->service->makePayment($data);
             

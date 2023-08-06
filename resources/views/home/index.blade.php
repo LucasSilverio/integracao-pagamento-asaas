@@ -13,7 +13,7 @@
               <p class="font-medium text-lg">Detalhes do pagamento</p>
               <p>Preencha todos os campos</p>
             </div>
-            <form action="{{ route('checkout.payment') }}" method="post" class="lg:col-span-2">
+            <form action="{{ route('checkout.payment') }}" method="post" class="lg:col-span-2" x-data="{ payment_method: '{{ old('payment_method', 'BOLETO') }}' }" >
                 @include('home._partials.form')
             </form>
           </div>
