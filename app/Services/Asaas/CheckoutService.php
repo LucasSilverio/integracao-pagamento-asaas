@@ -4,6 +4,7 @@ namespace App\Services\Asaas;
 
 use App\Repositories\PaymentRepositoryInterface;
 use App\Services\CheckoutServiceInterface;
+use Exception;
 use Illuminate\Support\Facades\Http;
 
 class CheckoutService implements CheckoutServiceInterface
@@ -15,9 +16,10 @@ class CheckoutService implements CheckoutServiceInterface
     {
         $this->repository = $repository;
     }
-
+    
     public function makePayment(array $data)
     {
+        
         $this->customerId = $this->createCustomer($data['name'], $data['email'], $data['cpfCnpj'], $data['phone']);
         $creditCard = [];
         $creditCardHolderInfo = [];
@@ -38,6 +40,11 @@ class CheckoutService implements CheckoutServiceInterface
             'creditCardHolderInfo'  => $creditCardHolderInfo,
             'remoteIp'              => $data['ip']
         ]);        
+        
+
+        if ($response->failed()) {            
+            throw new Exception($response->json('errors')[0]['description']);
+        }
 
         if ($response->successful()) {            
             return $this->repository->create($response->json());
@@ -60,8 +67,12 @@ class CheckoutService implements CheckoutServiceInterface
             'phone'     => $phone
         ]);
         
-        $data = $response->json();
+        if ($response->failed()) {
+            throw new Exception($response->json('errors')[0]['description']);
+        }
 
+        $data = $response->json();
+        
         return $data['id'];
     }
 
@@ -69,8 +80,7 @@ class CheckoutService implements CheckoutServiceInterface
      * Metodo responsável por devolver as informações necessárias como um objeto
      */
     public function createCreditCardObject(array $data)
-    {
-        
+    {        
         $expiry = explode('/', $data['card_expiry']);
                 
         $creditCard = [

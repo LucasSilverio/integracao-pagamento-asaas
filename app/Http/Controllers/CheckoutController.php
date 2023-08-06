@@ -36,7 +36,7 @@ class CheckoutController extends Controller
             return redirect()->route('checkout.thanks', $payment);
             
         } catch(Exception $e) {
-            dd($e->getMessage());
+            return redirect('/')->with('message', $e->getMessage());
         }
         
     }

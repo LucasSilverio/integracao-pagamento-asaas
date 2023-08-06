@@ -1,5 +1,6 @@
+@include('includes.alerts')
 @csrf
-<div class="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">
+<div class="grid gap-4 gap-y-2 text-sm grid-cols-1 md:grid-cols-5">    
     <div class="md:col-span-5">
         
         <label for="name">Forma de Pagamento</label>
@@ -75,9 +76,9 @@
     </div>
 
     <div class="md:col-span-1">
-        <label for="ccv">CCV</label>
-        <input type="text" name="ccv"  class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="123" x-mask="999" />
-        @error('ccv')
+        <label for="cvv">CCV</label>
+        <input type="text" name="cvv"  class="h-10 border mt-1 rounded px-4 w-full bg-gray-50" value="" placeholder="123" x-mask="999" />
+        @error('cvv')
             <div class="text-red-600">{{ $message }}</div>
         @enderror
     </div>
