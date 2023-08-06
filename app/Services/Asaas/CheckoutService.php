@@ -2,12 +2,19 @@
 
 namespace App\Services\Asaas;
 
+use App\Repositories\PaymentRepositoryInterface;
 use App\Services\CheckoutServiceInterface;
 use Illuminate\Support\Facades\Http;
 
 class CheckoutService implements CheckoutServiceInterface
 {
     protected $customerId;
+    private $repository;
+
+    public function __construct(PaymentRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
 
     public function makePayment(array $data)
     {
@@ -30,7 +37,11 @@ class CheckoutService implements CheckoutServiceInterface
             'creditCard'            => $creditCard,
             'creditCardHolderInfo'  => $creditCardHolderInfo,
             'remoteIp'              => $data['ip']
-        ]);
+        ]);        
+
+        if ($response->successful()) {            
+            return $this->repository->create($response->json());
+        }
 
         return $response->json();
     }
@@ -54,6 +65,9 @@ class CheckoutService implements CheckoutServiceInterface
         return $data['id'];
     }
 
+    /**
+     * Metodo responsável por devolver as informações necessárias como um objeto
+     */
     public function createCreditCardObject(array $data)
     {
         
@@ -70,6 +84,9 @@ class CheckoutService implements CheckoutServiceInterface
         return (object) $creditCard;
     }
 
+    /**
+     * Metodo responsável por devolver as informações necessárias como um objeto
+     */
     public function createCreditCardHolderInfoObject(array $data)
     {        
         $creditCardHolderInfo = [
@@ -82,5 +99,14 @@ class CheckoutService implements CheckoutServiceInterface
         ];
         
         return (object) $creditCardHolderInfo;
+    }
+
+    public function getQrCodePayment(string $invoiceNumber)
+    {
+        $response = Http::withHeaders([
+            'access_token' => env('ASAAS_KEY')
+        ])->get(env('ASAAS_URL')."payments/{$invoiceNumber}/pixQrCode"); 
+
+        return $response->json();
     }
 }

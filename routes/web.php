@@ -14,4 +14,4 @@ Route::resource('/', HomeController::class);
  * Checkout
  */
 Route::post('/checkout/payment', [CheckoutController::class, 'payment'])->name('checkout.payment');
-Route::get('/checkout/thanks', [CheckoutController::class, 'thanks'])->name('checkout.thanks');
+Route::get('/checkout/{paymentId}/thanks', [CheckoutController::class, 'thanks'])->name('checkout.thanks');

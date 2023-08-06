@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\{
+    PaymentRepository
+};
+use App\Repositories\{
+    PaymentRepositoryInterface
+};
 use App\Services\Asaas\{
     CheckoutService
 };
@@ -20,6 +26,11 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(
             CheckOutServiceInterface::class,
             CheckoutService::class
+        );
+
+        $this->app->singleton(
+            PaymentRepositoryInterface::class,
+            PaymentRepository::class
         );
     }
 
