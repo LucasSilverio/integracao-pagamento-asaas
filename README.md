@@ -58,6 +58,9 @@ Crie as tabelas
   php artisan migrate
 ```
 
+## Acessando a aplicação
+No seu navegador preferido, digite: http://localhost:8888
+
 ## Executar os Testes
 No terminal
 ```bash
